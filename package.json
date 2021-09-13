@@ -1,18 +1,21 @@
 {
-  "name": "app",
-  "version": "0.0.0",
+  "name": "activ",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon --legacy-watch ./bin/www"
+    "dev": "nodemon --legacy-watch ./bin/www",
+    "test": "jest --watch"
   },
   "dependencies": {
+    "@types/jest": "^27.0.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "morgan": "~1.9.1",
+    "mysql": "^2.18.1",
     "nodemon": "^2.0.12"
   },
   "devDependencies": {
@@ -20,7 +23,9 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-jest": "^24.4.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^27.1.1",
     "prettier": "^2.4.0"
   }
 }

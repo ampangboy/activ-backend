@@ -1,9 +1,10 @@
 module.exports = {
   env: {
     node: true,
+    'jest/global': true,
   },
-  extends: ['airbnb-base', 'prettier'],
-  plugins: ['prettier'],
+  extends: ['airbnb-base', 'prettier', 'plugin:jest/recommended'],
+  plugins: ['prettier', 'jest'],
   parserOptions: {
     ecmaVersion: 12,
   },
@@ -13,5 +14,10 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-unused-vars': ['error', { argsIgnorePattern: 'next' }],
     'no-console': 'off',
+  },
+  settings: {
+    jest: {
+      version: 27,
+    },
   },
 };
