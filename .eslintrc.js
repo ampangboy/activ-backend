@@ -1,10 +1,11 @@
 module.exports = {
   env: {
     node: true,
-    'jest/global': true,
+    'jest/globals': true,
   },
-  extends: ['airbnb-base', 'prettier', 'plugin:jest/recommended'],
-  plugins: ['prettier', 'jest'],
+  extends: ['plugin:jest/recommended', 'airbnb-base', 'prettier'],
+  plugins: ['jest', '@babel', 'prettier'],
+  parser: '@babel/eslint-parser',
   parserOptions: {
     ecmaVersion: 12,
   },
@@ -14,10 +15,6 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-unused-vars': ['error', { argsIgnorePattern: 'next' }],
     'no-console': 'off',
-  },
-  settings: {
-    jest: {
-      version: 27,
-    },
+    'linebreak-style': 'off',
   },
 };

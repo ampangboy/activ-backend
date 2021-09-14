@@ -8,17 +8,24 @@
     "test": "jest --watch"
   },
   "dependencies": {
-    "@types/jest": "^27.0.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "email-addresses": "^5.0.0",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
+    "is-string": "^1.0.7",
     "jade": "~1.11.0",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.12"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/eslint-parser": "^7.15.4",
+    "@babel/eslint-plugin": "^7.14.5",
+    "@babel/preset-env": "^7.15.6",
+    "@types/jest": "^27.0.1",
+    "@types/mysql": "^2.15.19",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.3.0",
