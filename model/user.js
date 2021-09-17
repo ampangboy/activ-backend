@@ -1,5 +1,10 @@
 const emailAddressParser = require('email-addresses');
-const isString = require('is-string');
+const {
+  intValidatorAllowNull,
+  stringValidator,
+  stringValidatorAllowNull,
+  dateTimeValidatorAllowNull,
+} = require('../helper/validator');
 
 function UserException(message) {
   this.message = message;
@@ -19,14 +24,16 @@ class User {
 
   #jobTitle;
 
-  constructor(emailAddress, password, firstName, lastName, jobTitle = null, userId = null) {
+  #createOn;
+
+  constructor(emailAddress, password, firstName, lastName, jobTitle = null, userId = null, createdOn = null) {
     this.userId = userId;
     this.emailAddress = emailAddress;
     this.password = password;
     this.firstName = firstName;
     this.lastName = lastName;
     this.jobTitle = jobTitle;
-    this.createdOn = new Date();
+    this.createdOn = createdOn;
   }
 
   get userId() {
@@ -34,11 +41,7 @@ class User {
   }
 
   set userId(userId) {
-    if (!Number.isSafeInteger(userId)) {
-      if (userId !== null) {
-        throw new UserException(`${userId} is not a valid Number format`);
-      }
-    }
+    intValidatorAllowNull(userId, UserException);
 
     this.#userId = userId;
 
@@ -50,6 +53,8 @@ class User {
   }
 
   set emailAddress(emailAddress) {
+    stringValidator(emailAddress, UserException);
+
     if (!User.isEmailAddress(emailAddress)) {
       throw new UserException(`${emailAddress} is not a valid email address`);
     }
@@ -63,9 +68,7 @@ class User {
   }
 
   set password(password) {
-    if (!isString(password)) {
-      throw new UserException(`${password} is not a valid String`);
-    }
+    stringValidator(password);
 
     this.#password = password;
     return this.#password;
@@ -76,9 +79,7 @@ class User {
   }
 
   set firstName(firstName) {
-    if (!isString(firstName)) {
-      throw new UserException(`${firstName} is not a valid String`);
-    }
+    stringValidator(firstName);
 
     this.#firstName = firstName;
     return this.#firstName;
@@ -89,9 +90,7 @@ class User {
   }
 
   set lastName(lastName) {
-    if (!isString(lastName)) {
-      throw new UserException(`${lastName} is not a valid String`);
-    }
+    stringValidator(lastName);
 
     this.#lastName = lastName;
     return this.#lastName;
@@ -102,14 +101,26 @@ class User {
   }
 
   set jobTitle(jobTitle) {
-    if (!isString(jobTitle)) {
-      if (!jobTitle === null) {
-        throw new UserException(`${jobTitle} is not a valid String`);
-      }
-    }
+    stringValidatorAllowNull(jobTitle);
 
     this.#jobTitle = jobTitle;
     return this.#jobTitle;
+  }
+
+  get createdOn() {
+    return this.#createOn;
+  }
+
+  set createdOn(createdOn) {
+    dateTimeValidatorAllowNull(createdOn, UserException);
+
+    if (createdOn === null) {
+      this.#createOn = null;
+      return this.#createOn;
+    }
+
+    this.#createOn = new Date(createdOn);
+    return this.#createOn;
   }
 
   static isEmailAddress(emailAddress) {
@@ -119,6 +130,4 @@ class User {
   }
 }
 
-const user = new User('zulfadhli@gmail.com', 'anypassword', 'pally', 'zaki', null);
-
-console.log(user.jobTitle);
+module.exports = User;

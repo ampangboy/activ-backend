@@ -1,4 +1,4 @@
-test('suplied password ', () => {
+test('suplied password', () => {
   expect(true).toBe(true);
 
   // A function for sign up, should takes one arguement (password)

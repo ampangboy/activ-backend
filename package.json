@@ -14,10 +14,9 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "is-string": "^1.0.7",
-    "jade": "~1.11.0",
+    "luxon": "^2.0.2",
     "morgan": "~1.9.1",
-    "mysql": "^2.18.1",
-    "nodemon": "^2.0.12"
+    "mysql": "^2.18.1"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
@@ -33,6 +32,7 @@
     "eslint-plugin-jest": "^24.4.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "^27.1.1",
+    "nodemon": "^2.0.12",
     "prettier": "^2.4.0"
   }
 }

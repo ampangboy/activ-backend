@@ -8,11 +8,4 @@ const pool = mysql.createPool({
   database: 'activ',
 });
 
-pool.query('SELECT * FROM user', (err, res) => {
-  const date = new Date(res[0].created_on);
-  console.log(date.getMonth());
-
-  pool.end();
-});
-
 module.exports = { pool };
