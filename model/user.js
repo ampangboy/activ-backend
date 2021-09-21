@@ -4,6 +4,7 @@ const {
   stringValidator,
   stringValidatorAllowNull,
   dateTimeValidatorAllowNull,
+  validateCharLength,
 } = require('../helper/validator');
 
 function UserException(message) {
@@ -24,7 +25,7 @@ class User {
 
   #jobTitle;
 
-  #createOn;
+  #createdOn;
 
   constructor(emailAddress, password, firstName, lastName, jobTitle = null, userId = null, createdOn = null) {
     this.userId = userId;
@@ -44,8 +45,6 @@ class User {
     intValidatorAllowNull(userId, UserException);
 
     this.#userId = userId;
-
-    return this.#userId;
   }
 
   get emailAddress() {
@@ -53,14 +52,17 @@ class User {
   }
 
   set emailAddress(emailAddress) {
+    const MAX_CHAR_LENGTH = 255;
+
     stringValidator(emailAddress, UserException);
+
+    validateCharLength(emailAddress, MAX_CHAR_LENGTH, UserException);
 
     if (!User.isEmailAddress(emailAddress)) {
       throw new UserException(`${emailAddress} is not a valid email address`);
     }
 
     this.#emailAddress = emailAddress;
-    return this.#emailAddress;
   }
 
   get password() {
@@ -68,10 +70,13 @@ class User {
   }
 
   set password(password) {
-    stringValidator(password);
+    const MAX_CHAR_LENGTH = 512;
+
+    validateCharLength(password, MAX_CHAR_LENGTH, UserException);
+
+    stringValidator(password, UserException);
 
     this.#password = password;
-    return this.#password;
   }
 
   get firstName() {
@@ -79,21 +84,27 @@ class User {
   }
 
   set firstName(firstName) {
-    stringValidator(firstName);
+    const MAX_CHAR_LENGTH = 255;
+
+    validateCharLength(firstName, MAX_CHAR_LENGTH, UserException);
+
+    stringValidator(firstName, UserException);
 
     this.#firstName = firstName;
-    return this.#firstName;
   }
 
   get lastName() {
-    return this.#firstName;
+    return this.#lastName;
   }
 
   set lastName(lastName) {
-    stringValidator(lastName);
+    const MAX_CHAR_LENGTH = 255;
+
+    validateCharLength(lastName, MAX_CHAR_LENGTH, UserException);
+
+    stringValidator(lastName, UserException);
 
     this.#lastName = lastName;
-    return this.#lastName;
   }
 
   get jobTitle() {
@@ -101,26 +112,24 @@ class User {
   }
 
   set jobTitle(jobTitle) {
-    stringValidatorAllowNull(jobTitle);
+    const MAX_CHAR_LENGTH = 255;
+
+    stringValidatorAllowNull(jobTitle, UserException);
+    if (jobTitle !== null) {
+      validateCharLength(jobTitle, MAX_CHAR_LENGTH, UserException);
+    }
 
     this.#jobTitle = jobTitle;
-    return this.#jobTitle;
   }
 
   get createdOn() {
-    return this.#createOn;
+    return this.#createdOn;
   }
 
   set createdOn(createdOn) {
     dateTimeValidatorAllowNull(createdOn, UserException);
 
-    if (createdOn === null) {
-      this.#createOn = null;
-      return this.#createOn;
-    }
-
-    this.#createOn = new Date(createdOn);
-    return this.#createOn;
+    this.#createdOn = createdOn === null ? null : new Date(createdOn);
   }
 
   static isEmailAddress(emailAddress) {

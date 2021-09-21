@@ -31,9 +31,16 @@ const dateTimeValidatorAllowNull = (date, ExceptionType) => {
   }
 };
 
+const validateCharLength = (string, maxCharLength, ExceptionType) => {
+  if (string.length > maxCharLength) {
+    throw new ExceptionType(`string exceed allowable character`);
+  }
+};
+
 module.exports = {
   intValidatorAllowNull,
   stringValidator,
   stringValidatorAllowNull,
   dateTimeValidatorAllowNull,
+  validateCharLength,
 };
