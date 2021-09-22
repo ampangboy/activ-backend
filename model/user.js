@@ -6,6 +6,7 @@ const {
   dateTimeValidatorAllowNull,
   validateCharLength,
 } = require('../helper/validator');
+const { pool } = require('../dbConnection');
 
 function UserException(message) {
   this.message = message;
@@ -136,6 +137,29 @@ class User {
     const addrs = emailAddressParser(emailAddress);
 
     return addrs !== null;
+  }
+
+  asyncAddUser() {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        'CALL createUser(?,?,?,?,?)',
+        [this.emailAddress, this.firstName, this.lastName, this.jobTitle, this.password],
+        (error, results) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolve(results);
+        }
+      );
+    });
+  }
+
+  async saveUserInfo() {
+    const respond = await this.asyncAddUser();
+    this.userId = respond[0][0].userId;
+    this.createdOn = respond[0][0].createdOn;
   }
 }
 

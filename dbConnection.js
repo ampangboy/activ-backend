@@ -5,7 +5,7 @@ const pool = mysql.createPool({
   host: 'host.docker.internal',
   user: 'root',
   password: '',
-  database: 'activ',
+  database: 'test_activ',
 });
 
 module.exports = { pool };
