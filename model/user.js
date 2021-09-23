@@ -8,11 +8,6 @@ const {
 } = require('../helper/validator');
 const { pool } = require('../dbConnection');
 
-function UserException(message) {
-  this.message = message;
-  this.name = 'UserException';
-}
-
 class User {
   #userId;
 
@@ -43,7 +38,7 @@ class User {
   }
 
   set userId(userId) {
-    intValidatorAllowNull(userId, UserException);
+    intValidatorAllowNull(userId);
 
     this.#userId = userId;
   }
@@ -55,12 +50,12 @@ class User {
   set emailAddress(emailAddress) {
     const MAX_CHAR_LENGTH = 255;
 
-    stringValidator(emailAddress, UserException);
+    stringValidator(emailAddress);
 
-    validateCharLength(emailAddress, MAX_CHAR_LENGTH, UserException);
+    validateCharLength(emailAddress, MAX_CHAR_LENGTH);
 
     if (!User.isEmailAddress(emailAddress)) {
-      throw new UserException(`${emailAddress} is not a valid email address`);
+      throw new Error(`${emailAddress} is not a valid email address`);
     }
 
     this.#emailAddress = emailAddress;
@@ -73,9 +68,9 @@ class User {
   set password(password) {
     const MAX_CHAR_LENGTH = 512;
 
-    validateCharLength(password, MAX_CHAR_LENGTH, UserException);
+    validateCharLength(password, MAX_CHAR_LENGTH);
 
-    stringValidator(password, UserException);
+    stringValidator(password);
 
     this.#password = password;
   }
@@ -87,9 +82,9 @@ class User {
   set firstName(firstName) {
     const MAX_CHAR_LENGTH = 255;
 
-    validateCharLength(firstName, MAX_CHAR_LENGTH, UserException);
+    validateCharLength(firstName, MAX_CHAR_LENGTH);
 
-    stringValidator(firstName, UserException);
+    stringValidator(firstName);
 
     this.#firstName = firstName;
   }
@@ -101,9 +96,9 @@ class User {
   set lastName(lastName) {
     const MAX_CHAR_LENGTH = 255;
 
-    validateCharLength(lastName, MAX_CHAR_LENGTH, UserException);
+    validateCharLength(lastName, MAX_CHAR_LENGTH);
 
-    stringValidator(lastName, UserException);
+    stringValidator(lastName);
 
     this.#lastName = lastName;
   }
@@ -115,9 +110,9 @@ class User {
   set jobTitle(jobTitle) {
     const MAX_CHAR_LENGTH = 255;
 
-    stringValidatorAllowNull(jobTitle, UserException);
+    stringValidatorAllowNull(jobTitle);
     if (jobTitle !== null) {
-      validateCharLength(jobTitle, MAX_CHAR_LENGTH, UserException);
+      validateCharLength(jobTitle, MAX_CHAR_LENGTH);
     }
 
     this.#jobTitle = jobTitle;
@@ -128,9 +123,9 @@ class User {
   }
 
   set createdOn(createdOn) {
-    dateTimeValidatorAllowNull(createdOn, UserException);
+    dateTimeValidatorAllowNull(createdOn);
 
-    this.#createdOn = createdOn === null ? null : new Date(createdOn);
+    this.#createdOn = createdOn === null ? null : createdOn;
   }
 
   static isEmailAddress(emailAddress) {

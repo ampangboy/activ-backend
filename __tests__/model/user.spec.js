@@ -81,7 +81,7 @@ test('able to set new job user Id', () => {
 });
 
 test('able to set new created on date', () => {
-  user.createdOn = '2021-08-25 08:34:33';
+  user.createdOn = new Date('2021-08-25 08:34:33');
 
   expect(user.createdOn.getFullYear()).toBe(2021);
   expect(user.createdOn.getMonth()).toBe(7);
@@ -89,4 +89,10 @@ test('able to set new created on date', () => {
   expect(user.createdOn.getHours()).toBe(8);
   expect(user.createdOn.getMinutes()).toBe(34);
   expect(user.createdOn.getSeconds()).toBe(33);
+});
+
+test('throw an error if unparsable string is pass', () => {
+  expect(() => {
+    user.createdOn = '1';
+  }).toThrow(`1 is in invalid date time format`);
 });
