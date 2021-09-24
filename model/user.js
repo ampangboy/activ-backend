@@ -7,6 +7,7 @@ const {
   validateCharLength,
 } = require('../helper/validator');
 const { pool } = require('../dbConnection');
+const PasswordEncryptor = require('../helper/PasswordEncryptor');
 
 class User {
   #userId;
@@ -134,7 +135,7 @@ class User {
     return addrs !== null;
   }
 
-  asyncAddUser() {
+  asyncCreateUser() {
     return new Promise((resolve, reject) => {
       pool.query(
         'CALL createUser(?,?,?,?,?)',
@@ -152,9 +153,15 @@ class User {
   }
 
   async saveUserInfo() {
-    const respond = await this.asyncAddUser();
+    const respond = await this.asyncCreateUser();
     this.userId = respond[0][0].userId;
     this.createdOn = respond[0][0].createdOn;
+  }
+
+  async encyptPassword() {
+    const passwordEncryptor = new PasswordEncryptor(this.password);
+    await passwordEncryptor.encryptPassword();
+    this.password = passwordEncryptor.hashPassword;
   }
 }
 

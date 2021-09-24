@@ -91,7 +91,7 @@ test('able to set new created on date', () => {
   expect(user.createdOn.getSeconds()).toBe(33);
 });
 
-test('throw an error if unparsable string is pass', () => {
+test('throw an error if non Date object is pass', () => {
   expect(() => {
     user.createdOn = '1';
   }).toThrow(`1 is in invalid date time format`);
