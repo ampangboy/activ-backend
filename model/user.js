@@ -163,6 +163,21 @@ class User {
     await passwordEncryptor.encryptPassword();
     this.password = passwordEncryptor.hashPassword;
   }
+
+  static asyncgetPasswordByEmailAddress(emailAddress) {
+    return new Promise((resolve, reject) => {
+      pool.query('CALL getPasswordByEmailAddress(?)', [emailAddress], (error, results) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        const password = results[0][0] === undefined ? null : results[0][0].password;
+
+        resolve(password);
+      });
+    });
+  }
 }
 
 module.exports = User;

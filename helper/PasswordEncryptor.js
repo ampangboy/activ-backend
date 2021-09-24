@@ -24,6 +24,11 @@ class PasswordEncryptor {
 
     this.hashPassword = await bcrypt.hash(this.plainTextPassword, saltRounds);
   };
+
+  comparePassword = async () => {
+    const isThePassword = await bcrypt.compare(this.plainTextPassword, this.hashPassword);
+    return isThePassword;
+  };
 }
 
 module.exports = PasswordEncryptor;

@@ -1,20 +1,9 @@
 const request = require('supertest');
-const { pool } = require('../dbConnection');
-const User = require('../model/user');
-const PasswordEncryptor = require('../helper/PasswordEncryptor');
-const app = require('../app');
-
-const deleteAllUser = () =>
-  new Promise((resolve, reject) => {
-    pool.query('DELETE FROM user', (error, results) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-
-      resolve(results);
-    });
-  });
+const { pool } = require('../../dbConnection');
+const User = require('../../model/user');
+const PasswordEncryptor = require('../../helper/PasswordEncryptor');
+const app = require('../../app');
+const { deleteAllUser } = require('../../test/initTest');
 
 beforeEach(() => deleteAllUser());
 
