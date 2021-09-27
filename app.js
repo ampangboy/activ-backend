@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const signUpRouter = require('./routes/signUp');
+const signInRouter = require('./routes/signIn');
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // route middleware
-app.use('/', signUpRouter);
+app.use('/sign-up', signUpRouter);
+app.use('/sign-in', signInRouter);
 
 module.exports = app;

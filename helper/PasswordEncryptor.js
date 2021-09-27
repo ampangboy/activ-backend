@@ -4,9 +4,9 @@ const { stringValidator } = require('./validator');
 class PasswordEncryptor {
   #plainTextPassword;
 
-  constructor(plainTextPassword) {
+  constructor(plainTextPassword, hashPassword = null) {
     this.plainTextPassword = plainTextPassword;
-    this.hashPassword = null;
+    this.hashPassword = hashPassword;
   }
 
   get plainTextPassword() {

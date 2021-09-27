@@ -135,6 +135,21 @@ class User {
     return addrs !== null;
   }
 
+  static asyncgetPasswordByEmailAddress(emailAddress) {
+    return new Promise((resolve, reject) => {
+      pool.query('CALL getPasswordByEmailAddress(?)', [emailAddress], (error, results) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        const password = results[0][0] === undefined ? null : results[0][0].password;
+
+        resolve(password);
+      });
+    });
+  }
+
   asyncCreateUser() {
     return new Promise((resolve, reject) => {
       pool.query(
@@ -164,19 +179,37 @@ class User {
     this.password = passwordEncryptor.hashPassword;
   }
 
-  static asyncgetPasswordByEmailAddress(emailAddress) {
+  static asyncGetUserByEmailAddress(emailAddress) {
     return new Promise((resolve, reject) => {
-      pool.query('CALL getPasswordByEmailAddress(?)', [emailAddress], (error, results) => {
+      pool.query('CALL getUserByEmailAddress(?)', [emailAddress], (error, results) => {
         if (error) {
           reject(error);
           return;
         }
 
-        const password = results[0][0] === undefined ? null : results[0][0].password;
-
-        resolve(password);
+        resolve(results[0][0]);
       });
     });
+  }
+
+  static async findUserInfo(emailAddress) {
+    const respond = await User.asyncGetUserByEmailAddress(emailAddress);
+
+    if (respond === undefined) {
+      return null;
+    }
+
+    const user = new User(
+      respond.emailAddress,
+      respond.password,
+      respond.firstName,
+      respond.lastName,
+      respond.jobTitle,
+      respond.userId,
+      respond.createdOn
+    );
+
+    return user;
   }
 }
 
