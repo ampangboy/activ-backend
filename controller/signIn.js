@@ -7,17 +7,22 @@ const signIn = async (req, res) => {
   let token;
 
   try {
-    hashPassword = User.asyncgetPasswordByEmailAddress(req.body.emailAddress);
+    hashPassword = await User.asyncgetPasswordByEmailAddress(req.body.emailAddress);
   } catch (err) {
+    return res.status(505).end();
+  }
+
+  if (hashPassword === null) {
     res.statusMessage = 'invalid username/password';
-    res.status(404).end();
+    return res.status(401).end();
   }
 
   const passwordEncrptor = new PasswordEncryptor(req.body.password, hashPassword);
+  const isPasswordCorrect = await passwordEncrptor.comparePassword();
 
-  if (!passwordEncrptor.comparePassword) {
+  if (!isPasswordCorrect) {
     res.statusMessage = 'invalid username/password';
-    res.status(404).end();
+    return res.status(401).end();
   }
 
   const user = await User.findUserInfo(req.body.emailAddress);
@@ -26,7 +31,7 @@ const signIn = async (req, res) => {
     token = await signJwt({ userId: user.userId });
   }
 
-  res.json({ token });
+  return res.json({ token });
 };
 
 module.exports = { signIn };

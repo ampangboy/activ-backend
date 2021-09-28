@@ -52,6 +52,15 @@ test('it should sign ip the user successfully', async () => {
   expect(res.body.token).toStrictEqual(expect.any(String));
 });
 
+test('it should return error if data is not correctly being passed', async () => {
+  const res = await request(app).post('/sign-in').send({
+    emailAddress: 'zfaba.a@gmail.com',
+    password: 'Core@123',
+  });
+
+  expect(res.statusCode).toBe(401);
+});
+
 afterAll(() => {
   pool.end();
 });
