@@ -8,4 +8,20 @@ const signJwt = async (payload) => {
   return token;
 };
 
-module.exports = { signJwt };
+const checkJwtValidity = async (token) => {
+  try {
+    await jwt.verify(token, JWT_KEY);
+  } catch (err) {
+    return false;
+  }
+
+  return true;
+};
+
+const decodeJwt = async (token) => {
+  const decode = await jwt.verify(token, JWT_KEY);
+
+  return decode;
+};
+
+module.exports = { signJwt, checkJwtValidity, decodeJwt };
