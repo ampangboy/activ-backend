@@ -8,6 +8,7 @@ const {
   validateEnumerator,
   dateTimeValidatorAllowNull,
 } = require('../helper/validator');
+const { pool } = require('../dbConnection');
 
 class Activity {
   #activityId;
@@ -147,6 +148,8 @@ class Activity {
   set status(status) {
     const ENUM = ['NS', 'IP', 'C', 'P'];
     validateEnumerator(status, ENUM);
+
+    this.#status = status;
   }
 
   get createdOn() {
@@ -158,6 +161,46 @@ class Activity {
 
     this.#createdOn = createdOn === null ? null : createdOn;
   }
+
+  asyncCreateActivity() {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        'CALL createActivity(?,?,?,?,?,?,?,?,?)',
+        [
+          this.userId,
+          this.assigneeId,
+          this.name,
+          this.description,
+          this.projectId,
+          this.status,
+          this.startDate,
+          this.plannedEndDate,
+          this.endDate,
+        ],
+        (error, results) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolve(results);
+        }
+      );
+    });
+  }
+
+  async saveActivity() {
+    const respond = await this.asyncCreateActivity();
+    this.activityId = respond[0][0].activityId;
+  }
 }
 
 module.exports = Activity;
+
+// const activity = new Activity(1, 1, 'New Activity', 1, 'NS', new Date('20201-01-01'), new Date('2021-01-02'));
+
+// (async () => {
+//   const id = await activity.asyncCreateActivity();
+//   console.log(id);
+// })();
+// activity.asyncCreateActivity();

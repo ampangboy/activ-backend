@@ -14,6 +14,7 @@ const deleteAllUser = () =>
   });
 
 const addOneUser = async () => {
+  await deleteAllUser();
   const user = new User('zulfadhli.zaki@beicip.asia', 'Core@123', 'Zulfadhli', 'Mohd Zaki', 'Data');
 
   await deleteAllUser();
@@ -21,4 +22,16 @@ const addOneUser = async () => {
   await user.saveUserInfo();
 };
 
-module.exports = { deleteAllUser, addOneUser };
+const deleteAllActivity = () =>
+  new Promise((resolve, reject) => {
+    pool.query('DELETE FROM activity', (error, results) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve(results);
+    });
+  });
+
+module.exports = { deleteAllUser, addOneUser, deleteAllActivity };
