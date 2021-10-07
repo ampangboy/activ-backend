@@ -13,15 +13,6 @@ const deleteAllUser = () =>
     });
   });
 
-const addOneUser = async () => {
-  await deleteAllUser();
-  const user = new User('zulfadhli.zaki@beicip.asia', 'Core@123', 'Zulfadhli', 'Mohd Zaki', 'Data');
-
-  await deleteAllUser();
-  await user.encyptPassword();
-  await user.saveUserInfo();
-};
-
 const deleteAllActivity = () =>
   new Promise((resolve, reject) => {
     pool.query('DELETE FROM activity', (error, results) => {
@@ -34,4 +25,56 @@ const deleteAllActivity = () =>
     });
   });
 
-module.exports = { deleteAllUser, addOneUser, deleteAllActivity };
+const deleteAllProject = () =>
+  new Promise((resolve, reject) => {
+    pool.query('DELETE FROM project', (error, results) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve(results);
+    });
+  });
+
+const resetUserAutoIncrement = () =>
+  new Promise((resolve, reject) => {
+    pool.query('ALTER TABLE user AUTO_INCREMENT = 1', (error, results) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve(results);
+    });
+  });
+
+const resetProjectAutoIncrement = () =>
+  new Promise((resolve, reject) => {
+    pool.query('ALTER TABLE project AUTO_INCREMENT = 1', (error, results) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve(results);
+    });
+  });
+
+const resetDatabase = async () => {
+  await deleteAllActivity();
+  await deleteAllProject();
+  await deleteAllUser();
+  await resetUserAutoIncrement();
+  await resetProjectAutoIncrement();
+};
+
+const addOneUser = async () => {
+  const user = new User('zulfadhli.zaki@beicip.asia', 'Core@123', 'Zulfadhli', 'Mohd Zaki', 'Data');
+
+  await resetDatabase();
+  await user.encyptPassword();
+  await user.saveUserInfo();
+};
+
+module.exports = { resetDatabase, addOneUser, resetProjectAutoIncrement };

@@ -3,9 +3,9 @@ const { pool } = require('../../dbConnection');
 const User = require('../../model/user');
 const PasswordEncryptor = require('../../helper/PasswordEncryptor');
 const app = require('../../app');
-const { deleteAllUser } = require('../../test/initTest');
+const { resetDatabase } = require('../../test/initTest');
 
-beforeEach(() => deleteAllUser());
+beforeEach(() => resetDatabase());
 
 test('save the User object to the database', async () => {
   const user = new User('zfaba.a@gmail.com', 'Core@123', 'Zulfadhli', 'Mohd Zaki', 'Data');

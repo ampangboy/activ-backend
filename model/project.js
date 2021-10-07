@@ -5,6 +5,7 @@ const {
   stringValidatorAllowNull,
   intValidatorAllowNull,
 } = require('../helper/validator');
+const { pool } = require('../dbConnection');
 
 class Project {
   #projectName;
@@ -76,6 +77,74 @@ class Project {
     stringValidatorAllowNull(projectDescription);
 
     this.#projectDescription = projectDescription;
+  }
+
+  async saveProjectInfo() {
+    const res = await this.asyncAddProject();
+    this.projectId = res[0][0].projectId;
+  }
+
+  async asyncAddProject() {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        'CALL createProject(?,?,?,?)',
+        [this.projectName, this.projectDescription, this.projectLeaderId, this.projectManagerId],
+        (error, results) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolve(results);
+        }
+      );
+    });
+  }
+
+  async updateProjectInfo() {
+    if (this.projectId === null) {
+      throw new Error('projectId is not set');
+    }
+
+    await this.asyncUpdateProjectById();
+  }
+
+  async asyncUpdateProjectById() {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        'CALL updateProjectByProjectId(?,?,?,?,?)',
+        [this.projectId, this.projectName, this.projectDescription, this.projectLeaderId, this.projectManagerId],
+        (error, results) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolve(results);
+        }
+      );
+    });
+  }
+
+  async deleteProjectInfo() {
+    if (this.projectId === null) {
+      throw new Error('projectId is not set');
+    }
+
+    await this.asyncDeleteProjectById();
+  }
+
+  async asyncDeleteProjectById() {
+    return new Promise((resolve, reject) => {
+      pool.query('CALL deleteProjectByProjectId(?)', [this.projectId], (error, results) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve(results);
+      });
+    });
   }
 }
 
