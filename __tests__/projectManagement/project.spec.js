@@ -14,21 +14,47 @@ describe('save project info', () => {
 });
 
 describe('update project info', () => {
-  test('it add update project with success', async () => {
+  test('it update project with success', async () => {
     const project = new Project('Dummy Project', 1, 1, 1);
 
     expect(async () => {
       await project.updateProjectInfo();
     }).not.toThrow();
   });
+
+  test('it update project with no id without success', async () => {
+    const project = new Project('Dummy Project', 1, 1);
+    let errMessage;
+
+    try {
+      await project.updateProjectInfo();
+    } catch (err) {
+      errMessage = err;
+    }
+
+    expect(errMessage).toStrictEqual(expect.any(Error));
+  });
 });
 
 describe('delete project info', () => {
-  test('it add delete project with success', async () => {
+  test('it delete project with success', async () => {
     const project = new Project('Dummy Project', 1, 1, 1);
-
     expect(async () => {
       await project.deleteProjectInfo();
     }).not.toThrow();
+  });
+
+  test('it delete project with no id without success', async () => {
+    const project = new Project('Dummy Project', 1, 1);
+
+    let errMessage;
+
+    try {
+      await project.deleteProjectInfo();
+    } catch (err) {
+      errMessage = err;
+    }
+
+    expect(errMessage).toStrictEqual(expect.any(Error));
   });
 });
