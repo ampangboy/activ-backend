@@ -8,8 +8,9 @@ const authorization = (capabilities) => {
     }
 
     const token = req.header.authorization.substring(8, req.header.authorization.length);
+    const isJwtValide = await checkJwtValidity(token);
 
-    if (!(await checkJwtValidity(token))) {
+    if (!isJwtValide) {
       res.body = { error: 'invalid token' };
       return res.status(401).end();
     }
@@ -19,7 +20,7 @@ const authorization = (capabilities) => {
     // test this
 
     // @ts-ignore
-    if (!(decode.capabilities !== capabilities)) {
+    if (decode.capabilities !== capabilities) {
       res.body = { error: 'Not allowed' };
       return res.status(401).end();
     }

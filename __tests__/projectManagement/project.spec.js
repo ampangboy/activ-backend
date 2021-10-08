@@ -1,5 +1,7 @@
+const request = require('supertest');
 const { addOneUser } = require('../../test/initTest');
 const Project = require('../../model/project');
+const app = require('../../app');
 
 beforeEach(() => addOneUser());
 
@@ -56,5 +58,14 @@ describe('delete project info', () => {
     }
 
     expect(errMessage).toStrictEqual(expect.any(Error));
+  });
+
+  test('POST /project it save the project successfully', async () => {
+    const res = await request(app).post('/project').set({ authorization: 'Bearer ' }).send({
+      emailAddress: 'zfaba.a@gmail.com',
+      password: 'Core@123',
+    });
+
+    expect(res.statusCode).toBe(401);
   });
 });

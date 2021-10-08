@@ -1,12 +1,37 @@
-const { checkJwtValidity } = require('../../utils/jwt');
+const mockJwt = require('../../utils/jwt');
+const authorization = require('../../middleware/authorization');
 
-test('verify the token is valid', async () => {
-  const validToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExNiwiaWF0IjoxNjMyODk4MzY3LCJleHAiOjE2NDA2NzQzNjd9.70Qw9ucM8yqUDL7IMY8vVknPfgB2NMBn5oThgtUBMGg';
+jest.mock('../../utils/jwt', () => ({ checkJwtValidity: jest.fn(), decodeJwt: jest.fn() }));
 
-  const invalidToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExNiwiaWF0IjoxNjMyODk4MzY3LCJleH2d4jE2NDA2NzQzNjd9.70Qw9ucM8yqUDL7IMl9hVknPfgB2NMBn5oThgtUBMGg';
+let mockRequest;
+let mockResponse;
+const mockNext = jest.fn();
 
-  expect(await checkJwtValidity(validToken)).toBe(true);
-  expect(await checkJwtValidity(invalidToken)).toBe(false);
+beforeEach(() => {
+  mockRequest = {};
+  mockResponse = {
+    status: jest.fn(() => ({
+      end: jest.fn(),
+    })),
+  };
+});
+
+test('it allow authorization if the correct capabilities is called', async () => {
+  // @ts-ignore
+  mockJwt.checkJwtValidity.mockResolvedValue(true);
+  // @ts-ignore
+  mockJwt.decodeJwt.mockResolvedValue({
+    capabilities: 'fakeCapability',
+  });
+
+  mockRequest = {
+    header: {
+      authorization: 'fakeToken',
+    },
+  };
+
+  const authorizationMiddleware = authorization('fakeCapability');
+  await authorizationMiddleware(mockRequest, mockResponse, mockNext);
+
+  expect(mockNext).toHaveBeenCalledTimes(1);
 });
