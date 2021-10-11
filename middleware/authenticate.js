@@ -1,11 +1,11 @@
-const User = require('../model/user');
 const PasswordEncryptor = require('../helper/PasswordEncryptor');
+const { asyncGetPasswordByEmailAddress } = require('../dbSubcriber');
 
 const authenticate = async (req, res, next) => {
   let hashPassword;
 
   try {
-    hashPassword = await User.asyncgetPasswordByEmailAddress(req.body.emailAddress);
+    hashPassword = await asyncGetPasswordByEmailAddress(req.body.emailAddress);
   } catch (err) {
     return res.status(505).end();
   }

@@ -6,8 +6,8 @@ const {
   dateTimeValidatorAllowNull,
   validateCharLength,
 } = require('../helper/validator');
-const { pool } = require('../dbConnection');
 const PasswordEncryptor = require('../helper/PasswordEncryptor');
+const { asyncCreateUser, asyncGetUserByEmailAddress } = require('../dbSubcriber');
 
 class User {
   #userId;
@@ -135,40 +135,8 @@ class User {
     return addrs !== null;
   }
 
-  static asyncgetPasswordByEmailAddress(emailAddress) {
-    return new Promise((resolve, reject) => {
-      pool.query('CALL getPasswordByEmailAddress(?)', [emailAddress], (error, results) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-
-        const password = results[0][0] === undefined ? null : results[0][0].password;
-
-        resolve(password);
-      });
-    });
-  }
-
-  asyncCreateUser() {
-    return new Promise((resolve, reject) => {
-      pool.query(
-        'CALL createUser(?,?,?,?,?)',
-        [this.emailAddress, this.firstName, this.lastName, this.jobTitle, this.password],
-        (error, results) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-
-          resolve(results);
-        }
-      );
-    });
-  }
-
   async saveUserInfo() {
-    const respond = await this.asyncCreateUser();
+    const respond = asyncCreateUser(this.emailAddress, this.firstName, this.lastName, this.jobTitle, this.password);
     this.userId = respond[0][0].userId;
     this.createdOn = respond[0][0].createdOn;
   }
@@ -179,21 +147,8 @@ class User {
     this.password = passwordEncryptor.hashPassword;
   }
 
-  static asyncGetUserByEmailAddress(emailAddress) {
-    return new Promise((resolve, reject) => {
-      pool.query('CALL getUserByEmailAddress(?)', [emailAddress], (error, results) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-
-        resolve(results[0][0]);
-      });
-    });
-  }
-
   static async findUserInfo(emailAddress) {
-    const respond = await User.asyncGetUserByEmailAddress(emailAddress);
+    const respond = await asyncGetUserByEmailAddress(emailAddress);
 
     if (respond === undefined) {
       return null;

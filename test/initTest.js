@@ -1,5 +1,4 @@
-const { pool } = require('../dbConnection');
-const User = require('../model/user');
+const pool = require('../dbConnection');
 
 const deleteAllUser = () =>
   new Promise((resolve, reject) => {
@@ -69,12 +68,4 @@ const resetDatabase = async () => {
   await resetProjectAutoIncrement();
 };
 
-const addOneUser = async () => {
-  const user = new User('zulfadhli.zaki@beicip.asia', 'Core@123', 'Zulfadhli', 'Mohd Zaki', 'Data');
-
-  await resetDatabase();
-  await user.encyptPassword();
-  await user.saveUserInfo();
-};
-
-module.exports = { resetDatabase, addOneUser, resetProjectAutoIncrement };
+module.exports = { resetDatabase };

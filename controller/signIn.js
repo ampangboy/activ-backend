@@ -10,7 +10,7 @@ const signIn = async (req, res) => {
     return res.status(505).end();
   }
 
-  const token = await signJwt({ userId: user.userId });
+  const token = await signJwt({ userId: user.userId, capability: 'createProject' });
 
   return res.json({ token });
 };

@@ -5,7 +5,7 @@ const {
   stringValidatorAllowNull,
   intValidatorAllowNull,
 } = require('../helper/validator');
-const { pool } = require('../dbConnection');
+const { asyncAddProject, asyncUpdateProjectById, asyncDeleteProjectById } = require('../dbSubcriber');
 
 class Project {
   #projectName;
@@ -80,25 +80,8 @@ class Project {
   }
 
   async saveProjectInfo() {
-    const res = await this.asyncAddProject();
+    const res = await asyncAddProject();
     this.projectId = res[0][0].projectId;
-  }
-
-  async asyncAddProject() {
-    return new Promise((resolve, reject) => {
-      pool.query(
-        'CALL createProject(?,?,?,?)',
-        [this.projectName, this.projectDescription, this.projectLeaderId, this.projectManagerId],
-        (error, results) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-
-          resolve(results);
-        }
-      );
-    });
   }
 
   async updateProjectInfo() {
@@ -106,24 +89,7 @@ class Project {
       throw new Error('projectId is not set');
     }
 
-    await this.asyncUpdateProjectById();
-  }
-
-  async asyncUpdateProjectById() {
-    return new Promise((resolve, reject) => {
-      pool.query(
-        'CALL updateProjectByProjectId(?,?,?,?,?)',
-        [this.projectId, this.projectName, this.projectDescription, this.projectLeaderId, this.projectManagerId],
-        (error, results) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-
-          resolve(results);
-        }
-      );
-    });
+    await asyncUpdateProjectById();
   }
 
   async deleteProjectInfo() {
@@ -131,20 +97,7 @@ class Project {
       throw new Error('projectId is not set');
     }
 
-    await this.asyncDeleteProjectById();
-  }
-
-  async asyncDeleteProjectById() {
-    return new Promise((resolve, reject) => {
-      pool.query('CALL deleteProjectByProjectId(?)', [this.projectId], (error, results) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-
-        resolve(results);
-      });
-    });
+    await asyncDeleteProjectById();
   }
 }
 
