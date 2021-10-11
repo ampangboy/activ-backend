@@ -150,7 +150,7 @@ class User {
   static async findUserInfo(emailAddress) {
     const respond = await asyncGetUserByEmailAddress(emailAddress);
 
-    if (respond === undefined) {
+    if (respond === null) {
       return null;
     }
 

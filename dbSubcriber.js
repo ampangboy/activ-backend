@@ -25,7 +25,7 @@ const asyncCreateUser = (emailAddress, firstName, lastName, jobTitle, password) 
           return;
         }
 
-        resolve(results);
+        resolve(results[0][0]);
       }
     );
   });
@@ -38,7 +38,9 @@ const asyncGetUserByEmailAddress = (emailAddress) =>
         return;
       }
 
-      resolve(results[0][0]);
+      results = results[0][0] === undefined ? null : results[0][0];
+
+      resolve(results);
     });
   });
 
@@ -53,7 +55,7 @@ const asyncAddProject = (projectName, projectDescription, projectLeaderId, proje
           return;
         }
 
-        resolve(results);
+        resolve(results[0][0]);
       }
     );
   });
