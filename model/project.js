@@ -89,7 +89,13 @@ class Project {
       throw new Error('projectId is not set');
     }
 
-    await asyncUpdateProjectById();
+    await asyncUpdateProjectById(
+      this.projectId,
+      this.projectName,
+      this.projectDescription,
+      this.#projectLeaderId,
+      this.projectManagerId
+    );
   }
 
   async deleteProjectInfo() {
