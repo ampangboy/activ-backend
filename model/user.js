@@ -136,9 +136,17 @@ class User {
   }
 
   async saveUserInfo() {
-    const respond = asyncCreateUser(this.emailAddress, this.firstName, this.lastName, this.jobTitle, this.password);
-    this.userId = respond[0][0].userId;
-    this.createdOn = respond[0][0].createdOn;
+    const respond = await asyncCreateUser(
+      this.emailAddress,
+      this.firstName,
+      this.lastName,
+      this.jobTitle,
+      this.password
+    );
+    // @ts-ignore
+    this.userId = respond.userId;
+    // @ts-ignore
+    this.createdOn = respond.createdOn;
   }
 
   async encyptPassword() {

@@ -6,21 +6,22 @@ const authenticate = async (req, res, next) => {
 
   try {
     hashPassword = await asyncGetPasswordByEmailAddress(req.body.emailAddress);
-  } catch (err) {
-    return res.status(505).end();
+  } catch {
+    res.status(400);
+    return res.json({ errorMessage: 'Invalid request, probably due to data type error or invalid email address' });
   }
 
   if (hashPassword === null) {
-    res.body = { error: 'invalid username/password' };
-    return res.status(401).end();
+    res.status(403);
+    return res.json({ errorMessage: 'Incorrect username/password' });
   }
 
   const passwordEncrptor = new PasswordEncryptor(req.body.password, hashPassword);
   const isPasswordCorrect = await passwordEncrptor.comparePassword();
 
   if (!isPasswordCorrect) {
-    res.body = { error: 'invalid username/password' };
-    return res.status(401).end();
+    res.status(403);
+    return res.json({ errorMessage: 'Incorrect username/password' });
   }
 
   return next();

@@ -1,49 +1,53 @@
 const request = require('supertest');
-const { pool } = require('../../dbConnection');
-const User = require('../../model/user');
-const PasswordEncryptor = require('../../helper/PasswordEncryptor');
+const faker = require('faker');
 const app = require('../../app');
-const { resetDatabase } = require('../../test/initTest');
+const pool = require('../../dbConnection');
+const mockDbSubcriber = require('../../dbSubcriber');
 
-beforeEach(() => resetDatabase());
+jest.mock('../../dbSubcriber', () => ({ asyncCreateUser: jest.fn() }));
 
-test('save the User object to the database', async () => {
-  const user = new User('zfaba.a@gmail.com', 'Core@123', 'Zulfadhli', 'Mohd Zaki', 'Data');
+const fakeUserRequest = {
+  emailAddress: faker.internet.email(),
+  password: faker.internet.password(),
+  firstName: faker.name.firstName(),
+  lastName: faker.name.lastName(),
+  jobTitle: null,
+};
 
-  await user.saveUserInfo();
-  expect(user.userId).toEqual(expect.any(Number));
-  expect(user.createdOn).toStrictEqual(expect.any(Date));
-});
+test('it should return error if request body data is not valid', async () => {
+  const fakeInvalidUserRequest = { ...fakeUserRequest };
+  fakeInvalidUserRequest.emailAddress = faker.lorem.word();
 
-test('genereate SHA from password', async () => {
-  const plainTextPassword = 'test@123';
+  const res = await request(app).post('/sign-up').send(fakeInvalidUserRequest);
 
-  const passwordEncryptor = new PasswordEncryptor(plainTextPassword);
-  await passwordEncryptor.encryptPassword();
-
-  expect(passwordEncryptor.hashPassword).toStrictEqual(expect.any(String));
-});
-
-test('encrpted the password and assigned to the User object', async () => {
-  const plainTextPassword = 'Core@123';
-
-  const user = new User('zfaba.a@gmail.com', plainTextPassword, 'Zulfadhli', 'Mohd Zaki', 'Data');
-  await user.encyptPassword();
-
-  expect(user.password).not.toBe(plainTextPassword);
-  expect(user.password).toStrictEqual(expect.any(String));
+  expect(res.statusCode).toBe(400);
+  expect(res.body.errorMessage).toMatch(/invalid request/i);
 });
 
 test('it should sign up the user successfully', async () => {
-  const res = await request(app).post('/sign-up').send({
-    emailAddress: 'zfaba.a@gmail.com',
-    password: 'Core@123',
-    firstName: 'Pally',
-    lastName: 'Zaki',
-    jobTitle: 'Data',
+  // @ts-ignore
+  mockDbSubcriber.asyncCreateUser.mockResolvedValue({
+    userId: faker.datatype.number(),
+    createdOn: faker.datatype.datetime(),
   });
 
-  expect(res.statusCode).toBe(200);
+  const res = await request(app).post('/sign-up').send(fakeUserRequest);
+
+  expect(res.statusCode).toBe(201);
+});
+
+test('it should give error if user cannot be saved', async () => {
+  // @ts-ignore
+  mockDbSubcriber.asyncCreateUser.mockRejectedValue();
+
+  const res = await request(app).post('/sign-up').send(fakeUserRequest);
+
+  expect(res.statusCode).toBe(400);
+  expect(res.body.errorMessage).toMatch(/unable to process/i);
+});
+
+beforeEach(() => {
+  jest.clearAllMocks();
 });
 
 afterAll(() => {

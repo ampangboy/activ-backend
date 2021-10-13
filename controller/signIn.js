@@ -7,7 +7,8 @@ const signIn = async (req, res) => {
   try {
     user = await User.findUserInfo(req.body.emailAddress);
   } catch {
-    return res.status(505).end();
+    res.status(400);
+    return res.json({ errorMessage: 'Invalid request, probably due to data type error or invalid email address' });
   }
 
   const token = await signJwt({ userId: user.userId, capability: 'createProject' });

@@ -5,20 +5,21 @@ const signUp = async (req, res) => {
 
   try {
     user = new User(req.body.emailAddress, req.body.password, req.body.firstName, req.body.lastName, req.body.jobTitle);
-  } catch (err) {
-    res.statusMessage = 'request does not contain valid values';
-    return res.status(501).end();
+  } catch {
+    res.status(400);
+    return res.json({ errorMessage: 'Invalid request, probably due to data type error or invalid email address' });
   }
 
   await user.encyptPassword();
 
   try {
     await user.saveUserInfo();
-    return res.sendStatus(200);
   } catch {
-    res.statusMessage = 'we having trouble completing the request, please try again';
-    return res.status(501).end();
+    res.status(400);
+    return res.json({ errorMessage: 'Server unable to process the request. Please try again later.' });
   }
+
+  return res.sendStatus(201);
 };
 
 module.exports = { signUp };

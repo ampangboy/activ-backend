@@ -3,16 +3,16 @@ const { checkJwtValidity, decodeJwt } = require('../utils/jwt');
 const authorization = (capabilities) => {
   const authorizationMiddleware = async (req, res, next) => {
     if (!req.header.authorization) {
-      res.body = { error: 'token not present' };
-      return res.status(401).end();
+      res.status(403);
+      return res.json({ errorMessage: 'Token is not present' });
     }
 
     const token = req.header.authorization.substring(8, req.header.authorization.length);
     const isJwtValide = await checkJwtValidity(token);
 
     if (!isJwtValide) {
-      res.body = { error: 'invalid token' };
-      return res.status(401).end();
+      res.status(403);
+      return res.json({ erroMessage: 'Invalid token' });
     }
 
     const decode = await decodeJwt(token);
@@ -21,8 +21,10 @@ const authorization = (capabilities) => {
 
     // @ts-ignore
     if (decode.capabilities !== capabilities) {
-      res.body = { error: 'Not allowed' };
-      return res.status(401).end();
+      res.status(403);
+      return res.json({
+        erroMessage: 'You are not allowed to perform this operation, please contact the administration',
+      });
     }
 
     return next();
