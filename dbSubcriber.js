@@ -114,7 +114,7 @@ const asyncCreateActivity = (
     );
   });
 
-const asyncGetProjectById = (projectId) =>
+const asyncGetProjectByProjectId = (projectId) =>
   new Promise((resolve, reject) => {
     pool.query('CALL getProjectByProjectId(?)', [projectId], (error, results) => {
       if (error) {
@@ -136,5 +136,5 @@ module.exports = {
   asyncUpdateProjectById,
   asyncDeleteProjectById,
   asyncCreateActivity,
-  asyncGetProjectById,
+  asyncGetProjectByProjectId,
 };

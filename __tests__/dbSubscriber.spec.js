@@ -90,7 +90,7 @@ describe('database integration for project table', () => {
   });
 
   test('get project with success', async () => {
-    const res = await dbSubscriber.asyncGetProjectById(resCreateProject.projectId);
+    const res = await dbSubscriber.asyncGetProjectByProjectId(resCreateProject.projectId);
 
     expect(res.projectId).toBe(resCreateProject.projectId);
     expect(res.projectLeaderId).toBe(project.projectLeaderId);

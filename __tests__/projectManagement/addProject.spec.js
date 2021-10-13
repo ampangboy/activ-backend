@@ -3,6 +3,7 @@ const faker = require('faker');
 const app = require('../../app');
 const { checkJwtValidity, decodeJwt } = require('../../utils/jwt');
 const { asyncAddProject } = require('../../dbSubcriber');
+const pool = require('../../dbConnection');
 
 jest.mock('../../utils/jwt', () => ({ checkJwtValidity: jest.fn(), decodeJwt: jest.fn() }));
 jest.mock('../../dbSubcriber', () => ({ asyncAddProject: jest.fn() }));
@@ -96,4 +97,8 @@ describe('POST /project', () => {
     expect(res.statusCode).toBe(201);
     expect(res.body.projectId).toBe(projectId);
   });
+});
+
+afterAll(() => {
+  pool.end();
 });
