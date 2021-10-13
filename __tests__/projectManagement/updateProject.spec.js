@@ -21,11 +21,11 @@ const fakeRequestBody = {
 };
 
 const fakeToken = faker.internet.password();
-const fakerUserId = faker.datatype.number();
+const fakerProjectId = faker.datatype.number();
 
 describe('PUT /project/:id', () => {
   test('return error if authorization header is not set', async () => {
-    const res = await request(app).put(`/project/${fakerUserId}`).send(fakeRequestBody);
+    const res = await request(app).put(`/project/${fakerProjectId}`).send(fakeRequestBody);
 
     expect(res.statusCode).toBe(403);
     expect(res.body.errorMessage).toMatch(/token is not present/i);
@@ -35,7 +35,7 @@ describe('PUT /project/:id', () => {
     checkJwtValidity.mockResolvedValue(false);
 
     const res = await request(app)
-      .put(`/project/${fakerUserId}`)
+      .put(`/project/${fakerProjectId}`)
       .set('Authorization', `Bearer ${fakeToken}`)
       .send(fakeRequestBody);
 
@@ -48,7 +48,7 @@ describe('PUT /project/:id', () => {
     decodeJwt.mockResolvedValue({ capabilities: [] });
 
     const res = await request(app)
-      .put(`/project/${fakerUserId}`)
+      .put(`/project/${fakerProjectId}`)
       .set('Authorization', `Bearer ${fakeToken}`)
       .send(fakeRequestBody);
 
@@ -64,7 +64,7 @@ describe('PUT /project/:id', () => {
     invalidfakeRequstBody.projectLeaderId = faker.datatype.string();
 
     const res = await request(app)
-      .put(`/project/${fakerUserId}`)
+      .put(`/project/${fakerProjectId}`)
       .set('Authorization', `Bearer ${fakeToken}`)
       .send(invalidfakeRequstBody);
 
@@ -78,7 +78,7 @@ describe('PUT /project/:id', () => {
     asyncUpdateProjectById.mockRejectedValue();
 
     const res = await request(app)
-      .put(`/project/${fakerUserId}`)
+      .put(`/project/${fakerProjectId}`)
       .set('Authorization', `Bearer ${fakeToken}`)
       .send(fakeRequestBody);
 
@@ -92,13 +92,13 @@ describe('PUT /project/:id', () => {
     asyncUpdateProjectById.mockResolvedValue();
 
     const res = await request(app)
-      .put(`/project/${fakerUserId}`)
+      .put(`/project/${fakerProjectId}`)
       .set('Authorization', `Bearer ${fakeToken}`)
       .send(fakeRequestBody);
 
     expect(res.statusCode).toBe(200);
     expect(asyncUpdateProjectById).toHaveBeenCalledWith(
-      parseInt(fakerUserId, 10),
+      parseInt(fakerProjectId, 10),
       fakeRequestBody.projectName,
       fakeRequestBody.projectDescription,
       fakeRequestBody.projectLeaderId,

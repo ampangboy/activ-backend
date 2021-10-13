@@ -103,7 +103,7 @@ class Project {
       throw new Error('projectId is not set');
     }
 
-    await asyncDeleteProjectById();
+    await asyncDeleteProjectById(this.projectId);
   }
 }
 

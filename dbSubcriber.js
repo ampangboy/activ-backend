@@ -114,6 +114,20 @@ const asyncCreateActivity = (
     );
   });
 
+const asyncGetProjectById = (projectId) =>
+  new Promise((resolve, reject) => {
+    pool.query('CALL getProjectByProjectId(?)', [projectId], (error, results) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      results = results[0][0] === undefined ? null : results[0][0];
+
+      resolve(results);
+    });
+  });
+
 module.exports = {
   asyncGetPasswordByEmailAddress,
   asyncCreateUser,
@@ -122,4 +136,5 @@ module.exports = {
   asyncUpdateProjectById,
   asyncDeleteProjectById,
   asyncCreateActivity,
+  asyncGetProjectById,
 };

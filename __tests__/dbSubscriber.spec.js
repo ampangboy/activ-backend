@@ -11,6 +11,7 @@ const user = {
   password: faker.internet.password(),
 };
 let resCreateUser;
+let resCreateProject;
 
 beforeAll(() => resetDatabase());
 
@@ -57,7 +58,6 @@ describe('database integration for user table', () => {
 
 describe('database integration for project table', () => {
   let project;
-  let resCreateProject;
 
   beforeAll(() => {
     project = {
@@ -87,6 +87,15 @@ describe('database integration for project table', () => {
       project.projectManagerId
     );
     expect(res).toStrictEqual(expect.any(Object));
+  });
+
+  test('get project with success', async () => {
+    const res = await dbSubscriber.asyncGetProjectById(resCreateProject.projectId);
+
+    expect(res.projectId).toBe(resCreateProject.projectId);
+    expect(res.projectLeaderId).toBe(project.projectLeaderId);
+    expect(res.projectManagerId).toBe(project.projectManagerId);
+    expect(res.projectDescription).toBe(project.projectDescription);
   });
 
   test('delete project with success', async () => {
