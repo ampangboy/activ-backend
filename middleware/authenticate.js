@@ -7,8 +7,8 @@ const authenticate = async (req, res, next) => {
   try {
     hashPassword = await asyncGetPasswordByEmailAddress(req.body.emailAddress);
   } catch {
-    res.status(400);
-    return res.json({ errorMessage: 'Invalid request, probably due to data type error or invalid email address' });
+    res.status(500);
+    return res.json({ errorMessage: 'There is problem with server, please try again later' });
   }
 
   if (hashPassword === null) {

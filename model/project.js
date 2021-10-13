@@ -81,7 +81,7 @@ class Project {
 
   async saveProjectInfo() {
     const res = await asyncAddProject();
-    this.projectId = res[0][0].projectId;
+    this.projectId = res.projectId;
   }
 
   async updateProjectInfo() {

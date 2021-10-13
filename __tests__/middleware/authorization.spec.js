@@ -21,17 +21,17 @@ test('it allow authorization if the correct capabilities is called', async () =>
   mockJwt.checkJwtValidity.mockResolvedValue(true);
   // @ts-ignore
   mockJwt.decodeJwt.mockResolvedValue({
-    capabilities: 'fakeCapability',
+    capabilities: ['fakeCapability'],
   });
 
   mockRequest = {
-    header: {
-      authorization: 'fakeToken',
-    },
+    header: jest.fn().mockImplementation(() => 'Bearer fakeToken'),
   };
 
   const authorizationMiddleware = authorization('fakeCapability');
   await authorizationMiddleware(mockRequest, mockResponse, mockNext);
 
+  expect(mockJwt.decodeJwt).toHaveBeenCalledWith('fakeToken');
+  expect(mockRequest.header).toHaveBeenCalledWith('Authorization');
   expect(mockNext).toHaveBeenCalledTimes(1);
 });

@@ -6,21 +6,28 @@ const addProject = async (req, res) => {
   try {
     project = new Project(req.body.projectName, req.body.projectLeaderId, req.body.projectManagerId);
   } catch {
-    res.body = { error: 'request does not contain valid values' };
-    return res.status(501).end();
+    res.status(400);
+    return res.json({
+      errorMessage: 'Request does not contain valid values, please check you if you have provided the correct datatype',
+    });
   }
 
   try {
-    await project.asyncAddProject();
+    await project.saveProjectInfo();
   } catch {
-    res.body = { error: 'cannot save project' };
-    return res.status(501).end();
+    res.status(500);
+    return res.json({
+      errorMessage: 'There is something wrong with the server, please try again later',
+    });
   }
 
   res.body = {
     projectId: project.projectId,
   };
-  return res.status(201).end();
+  res.status(201);
+  return res.json({
+    projectId: project.projectId,
+  });
 };
 
 module.exports = addProject;

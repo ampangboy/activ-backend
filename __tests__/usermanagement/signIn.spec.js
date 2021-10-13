@@ -22,6 +22,46 @@ const fakeUserResponse = {
   createdOn: faker.datatype.datetime(),
 };
 
+test('it should return error if there error in database layer', async () => {
+  // @ts-ignore
+  mockDbSubcriber.asyncGetPasswordByEmailAddress.mockRejectedValue();
+
+  const res = await request(app).post('/sign-in').send({
+    emailAddress: fakeUserResponse.emailAddress,
+    password: fakeUserResponse.password,
+  });
+
+  expect(res.statusCode).toBe(500);
+  expect(res.body.errorMessage).toMatch(/There is problem with server/i);
+});
+
+test('it should return error if password cannot be retrived', async () => {
+  // @ts-ignore
+  mockDbSubcriber.asyncGetPasswordByEmailAddress.mockResolvedValue(null);
+
+  const res = await request(app).post('/sign-in').send({
+    emailAddress: fakeUserResponse.emailAddress,
+    password: fakeUserResponse.password,
+  });
+
+  expect(res.statusCode).toBe(403);
+  expect(res.body.errorMessage).toMatch(/Incorrect username\/password/i);
+});
+
+test('it should return error if password did not match', async () => {
+  // @ts-ignore
+  mockDbSubcriber.asyncGetPasswordByEmailAddress.mockResolvedValue(null);
+  PasswordEncryptor.prototype.comparePassword = jest.fn().mockResolvedValue(false);
+
+  const res = await request(app).post('/sign-in').send({
+    emailAddress: fakeUserResponse.emailAddress,
+    password: fakeUserResponse.password,
+  });
+
+  expect(res.statusCode).toBe(403);
+  expect(res.body.errorMessage).toMatch(/Incorrect username\/password/i);
+});
+
 test('it should sign in the user successfully', async () => {
   // @ts-ignore
   mockDbSubcriber.asyncGetPasswordByEmailAddress.mockResolvedValue('dummyHashPassword');
@@ -38,46 +78,6 @@ test('it should sign in the user successfully', async () => {
   expect(mockDbSubcriber.asyncGetUserByEmailAddress).toHaveBeenCalled();
   expect(res.statusCode).toBe(200);
   expect(res.body.token).toStrictEqual(expect.any(String));
-});
-
-test('it should return error if email address cannot be find', async () => {
-  // @ts-ignore
-  mockDbSubcriber.asyncGetPasswordByEmailAddress.mockResolvedValue(null);
-  const res = await request(app).post('/sign-in').send({
-    emailAddress: fakeUserResponse.emailAddress,
-    password: fakeUserResponse.password,
-  });
-
-  expect(res.statusCode).toBe(401);
-});
-
-test('it should return error if there is error while finding the email address', async () => {
-  // @ts-ignore
-  mockDbSubcriber.asyncGetPasswordByEmailAddress.mockRejectedValue();
-  const res = await request(app).post('/sign-in').send({
-    emailAddress: fakeUserResponse.emailAddress,
-    password: fakeUserResponse.password,
-  });
-
-  expect(res.statusCode).toBe(400);
-  expect(res.body.errorMessage).toMatch(/Incorrect username\/password/i);
-});
-
-test('it should return error if password did not match', async () => {
-  // @ts-ignore
-  mockDbSubcriber.asyncGetPasswordByEmailAddress.mockResolvedValue('dummyHashPassword');
-  // @ts-ignore
-  mockDbSubcriber.asyncGetUserByEmailAddress.mockResolvedValue(fakeUserResponse);
-  PasswordEncryptor.prototype.comparePassword = jest.fn().mockResolvedValue(false);
-  // @ts-ignore
-
-  const res = await request(app).post('/sign-in').send({
-    emailAddress: fakeUserResponse.emailAddress,
-    password: fakeUserResponse.password,
-  });
-
-  expect(res.statusCode).toBe(403);
-  expect(res.body.errorMessage).toMatch(/Incorrect username\/password/i);
 });
 
 afterEach(() => {
