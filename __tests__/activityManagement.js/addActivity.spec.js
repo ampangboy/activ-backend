@@ -28,6 +28,7 @@ describe('POST /activity', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
   test('return error if authorization header is not set', async () => {
     const res = await request(app).post('/activity').send(fakeRequestBody);
 
