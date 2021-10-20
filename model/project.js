@@ -5,7 +5,7 @@ const {
   stringValidatorAllowNull,
   intValidatorAllowNull,
 } = require('../helper/validator');
-const { asyncAddProject, asyncUpdateProjectById, asyncDeleteProjectById } = require('../dbSubcriber');
+const { asyncAddProject, asyncUpdateProjectById } = require('../dbSubcriber');
 
 class Project {
   #projectName;
@@ -96,14 +96,6 @@ class Project {
       this.#projectLeaderId,
       this.projectManagerId
     );
-  }
-
-  async deleteProjectInfo() {
-    if (this.projectId === null) {
-      throw new Error('projectId is not set');
-    }
-
-    await asyncDeleteProjectById(this.projectId);
   }
 }
 

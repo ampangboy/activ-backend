@@ -89,8 +89,8 @@ const asyncDeleteProjectById = (projectId) =>
   });
 
 const asyncCreateActivity = (
-  userId,
   assigneeId,
+  userId,
   name,
   description,
   projectId,
@@ -102,16 +102,30 @@ const asyncCreateActivity = (
   new Promise((resolve, reject) => {
     pool.query(
       'CALL createActivity(?,?,?,?,?,?,?,?,?)',
-      [userId, assigneeId, name, description, projectId, status, startDate, plannedEndDate, endDate],
+      [assigneeId, userId, name, description, projectId, status, startDate, plannedEndDate, endDate],
       (error, results) => {
         if (error) {
           reject(error);
           return;
         }
 
-        resolve(results);
+        resolve(results[0][0]);
       }
     );
+  });
+
+const asyncGetActivityByProjectId = (projectId) =>
+  new Promise((resolve, reject) => {
+    pool.query('CALL getActivityByProjectId(?)', [projectId], (error, results) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      results = results[0][0] === undefined ? null : results[0];
+
+      resolve(results);
+    });
   });
 
 const asyncGetProjectByProjectId = (projectId) =>
@@ -128,6 +142,59 @@ const asyncGetProjectByProjectId = (projectId) =>
     });
   });
 
+const asyncGetActivityByUserId = (userId) =>
+  new Promise((resolve, reject) => {
+    pool.query('CALL getActivityByUserId(?)', [userId], (error, results) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      results = results[0][0] === undefined ? null : results[0];
+
+      resolve(results);
+    });
+  });
+
+const asyncDeleteActivityByActivityId = (activityId) =>
+  new Promise((resolve, reject) => {
+    pool.query('CALL deleteActivityByActivityId(?)', [activityId], (error, results) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve(results);
+    });
+  });
+
+const asyncUpdateActivitybyActivityId = (
+  userId,
+  assigneeId,
+  name,
+  description,
+  projectId,
+  status,
+  startDate,
+  plannedEndDate,
+  endDate,
+  activityId
+) =>
+  new Promise((resolve, reject) => {
+    pool.query(
+      'CALL updateActivityByActivityId(?,?,?,?,?,?,?,?,?,?)',
+      [userId, assigneeId, name, description, projectId, status, startDate, plannedEndDate, endDate, activityId],
+      (error, results) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve(results);
+      }
+    );
+  });
+
 module.exports = {
   asyncGetPasswordByEmailAddress,
   asyncCreateUser,
@@ -137,4 +204,8 @@ module.exports = {
   asyncDeleteProjectById,
   asyncCreateActivity,
   asyncGetProjectByProjectId,
+  asyncGetActivityByProjectId,
+  asyncGetActivityByUserId,
+  asyncDeleteActivityByActivityId,
+  asyncUpdateActivitybyActivityId,
 };

@@ -4,6 +4,7 @@ const logger = require('morgan');
 const signUpRouter = require('./routes/signUp');
 const signInRouter = require('./routes/signIn');
 const projectRouter = require('./routes/project');
+const activityRouter = require('./routes/activity');
 
 const app = express();
 
@@ -17,5 +18,6 @@ app.use(cookieParser());
 app.use('/sign-up', signUpRouter);
 app.use('/sign-in', signInRouter);
 app.use('/project', projectRouter);
+app.use('/activity', activityRouter);
 
 module.exports = app;

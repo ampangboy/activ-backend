@@ -12,6 +12,7 @@ const user = {
 };
 let resCreateUser;
 let resCreateProject;
+let project;
 
 beforeAll(() => resetDatabase());
 
@@ -57,8 +58,6 @@ describe('database integration for user table', () => {
 });
 
 describe('database integration for project table', () => {
-  let project;
-
   beforeAll(() => {
     project = {
       projectName: faker.random.words(),
@@ -100,6 +99,89 @@ describe('database integration for project table', () => {
 
   test('delete project with success', async () => {
     const res = await dbSubscriber.asyncDeleteProjectById(resCreateProject.projectId);
+
+    expect(res).toStrictEqual(expect.any(Object));
+  });
+});
+
+describe('database integration for activity table', () => {
+  let fakeActivity;
+  let resCreateActivity;
+
+  beforeAll(async () => {
+    resCreateProject = await dbSubscriber.asyncAddProject(
+      project.projectName,
+      project.projectDescription,
+      project.projectLeaderId,
+      project.projectManagerId
+    );
+
+    fakeActivity = {
+      assigneeId: resCreateUser.userId,
+      userId: resCreateUser.userId,
+      name: faker.lorem.words(),
+      description: faker.lorem.text(),
+      projectId: resCreateProject.projectId,
+      status: 'NS',
+      startDate: faker.datatype.datetime(),
+      plannedEndDate: faker.datatype.datetime(),
+      endDate: faker.datatype.datetime(),
+    };
+  });
+
+  test('success creating activity', async () => {
+    resCreateActivity = await dbSubscriber.asyncCreateActivity(
+      fakeActivity.assigneeId,
+      fakeActivity.userId,
+      fakeActivity.name,
+      fakeActivity.description,
+      fakeActivity.projectId,
+      fakeActivity.status,
+      fakeActivity.startDate,
+      fakeActivity.plannedEndDate,
+      fakeActivity.endDate
+    );
+
+    // @ts-ignore
+    expect(resCreateActivity.activityId).toStrictEqual(expect.any(Number));
+  });
+
+  test('success get activity by project', async () => {
+    const res = await dbSubscriber.asyncGetActivityByProjectId(fakeActivity.projectId);
+
+    // @ts-ignore
+    expect(res).toStrictEqual(expect.any(Array));
+    expect(res.length).toBe(1);
+  });
+
+  test('success get activity by user', async () => {
+    const res = await dbSubscriber.asyncGetActivityByUserId(fakeActivity.userId);
+
+    // @ts-ignore
+    expect(res).toStrictEqual(expect.any(Array));
+    expect(res.length).toBe(1);
+  });
+
+  test('success update activity by id', async () => {
+    const res = await dbSubscriber.asyncUpdateActivitybyActivityId(
+      fakeActivity.userId,
+      fakeActivity.assigneeId,
+      faker.lorem.words(),
+      fakeActivity.description,
+      fakeActivity.projectId,
+      fakeActivity.status,
+      fakeActivity.startDate,
+      fakeActivity.plannedEndDate,
+      fakeActivity.endDate,
+      resCreateActivity.activityId
+    );
+
+    // @ts-ignore
+    expect(res).toStrictEqual(expect.any(Object));
+  });
+
+  test('delete activity by id', async () => {
+    const res = await dbSubscriber.asyncDeleteActivityByActivityId(resCreateActivity.projectId);
 
     expect(res).toStrictEqual(expect.any(Object));
   });

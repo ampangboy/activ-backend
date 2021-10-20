@@ -8,7 +8,12 @@ const {
   validateEnumerator,
   dateTimeValidatorAllowNull,
 } = require('../helper/validator');
-const { asyncCreateActivity } = require('../dbSubcriber');
+const {
+  asyncCreateActivity,
+  asyncGetActivityByUserId,
+  asyncGetActivityByProjectId,
+  asyncUpdateActivitybyActivityId,
+} = require('../dbSubcriber');
 
 class Activity {
   #activityId;
@@ -164,7 +169,70 @@ class Activity {
 
   async saveActivity() {
     const respond = await asyncCreateActivity();
-    this.activityId = respond[0][0].activityId;
+    this.activityId = respond.activityId;
+  }
+
+  static async getActivityByUserId(userId) {
+    intValidator(userId);
+
+    const res = await asyncGetActivityByUserId(userId);
+    const activities = res.map(
+      (a) =>
+        new Activity(
+          a.userId,
+          a.assigneeId,
+          a.name,
+          a.projectId,
+          a.status,
+          a.startDate,
+          a.plannedEndDate,
+          a.activityId,
+          a.description,
+          a.endDate,
+          a.createdOn
+        )
+    );
+
+    return activities;
+  }
+
+  static async getActivityByProjectId(projectId) {
+    intValidator(projectId);
+
+    const res = await asyncGetActivityByProjectId(projectId);
+    const activities = res.map(
+      (a) =>
+        new Activity(
+          a.userId,
+          a.assigneeId,
+          a.name,
+          a.projectId,
+          a.status,
+          a.startDate,
+          a.plannedEndDate,
+          a.activityId,
+          a.description,
+          a.endDate,
+          a.createdOn
+        )
+    );
+
+    return activities;
+  }
+
+  async updateActivity() {
+    await asyncUpdateActivitybyActivityId(
+      this.userId,
+      this.assigneeId,
+      this.name,
+      this.description,
+      this.projectId,
+      this.status,
+      this.startDate,
+      this.plannedEndDate,
+      this.endDate,
+      this.activityId
+    );
   }
 }
 
